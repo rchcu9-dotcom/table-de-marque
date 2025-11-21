@@ -1,0 +1,282 @@
+📘 README – Backend Table de Marque (NestJS + Architecture Hexagonale)
+🎯 Introduction
+
+Ce backend implémente une application modulaire en NestJS, suivant les principes :
+
+de l’architecture hexagonale (ports & adapters)
+
+de la séparation stricte des responsabilités (Domain — Application — Infrastructure)
+
+de la validation via DTO
+
+de la testabilité totale (unit tests + e2e)
+
+d’une future intégration Prisma + CI/CD
+
+L’objectif est d’avoir :
+
+une base propre et durable
+
+facile à maintenir
+
+testable
+
+compatible CI
+
+extensible pour gérer l’ensemble de la table de marque hockey
+
+🧱 Architecture globale (Responsabilités)
+
+Voici la vue en couches, organisationnelle :
+
+┌──────────────────────────────────────────────────────────┐
+│                       Interface (HTTP)                   │
+│         Controllers NestJS → DTO → appels Use Cases      │
+└──────────────────────────────────────────────────────────┘
+                ▲                         │
+                │                         ▼
+┌──────────────────────────────────────────────────────────┐
+│                    Application Layer                      │
+│  Use Cases (Create / Read / Update / Delete)             │
+│  Orchestration du flux, sans logique métier              │
+│  Dépend UNIQUEMENT de ports du domaine                   │
+└──────────────────────────────────────────────────────────┘
+                ▲                         │
+                │                         ▼
+┌──────────────────────────────────────────────────────────┐
+│                       Domain Layer                       │
+│  Entités métier (Match…)                                 │
+│  Ports (interfaces repositories)                         │
+│  Indépendant de Nest / Prisma / framework                │
+└──────────────────────────────────────────────────────────┘
+                ▲                         │
+                │                         ▼
+┌──────────────────────────────────────────────────────────┐
+│                  Infrastructure Layer                    │
+│  Adapters :                                              │
+│  - Repositories (Prisma)                                 │
+│  - HTTP (Controllers)                                    │
+│  - Database (Prisma ORM)                                 │
+└──────────────────────────────────────────────────────────┘
+
+🔄 Architecture FLUX (exécution d’une requête)
+Client HTTP (POST /matches)
+           │
+           ▼
+     Controller
+           │ valide DTO
+           ▼
+       Use Case
+           │ transforme DTO → Entité Domain
+           ▼
+   Repository (port)
+           │
+    Adapter (Prisma)
+           │
+         Base SQL
+
+🎯 Idée clé :
+
+Les Use Cases ne dépendent jamais d’une base de données.
+Ils dépendent d’une INTERFACE (port).
+C’est l’infrastructure qui fournit l’adapter (Prisma).
+
+📁 Structure du projet
+src/
+ ├── domain/
+ │     └── match/
+ │          ├── entities/
+ │          │     └── match.entity.ts
+ │          └── repositories/
+ │                ├── match.repository.ts (port)
+ │                └── tokens.ts
+ │
+ ├── application/
+ │     └── match/
+ │           ├── dto/
+ │           │     ├── create-match.dto.ts
+ │           │     ├── update-match.dto.ts
+ │           │     └── delete-match.dto.ts
+ │           └── use-cases/
+ │                 ├── create-match.usecase.ts
+ │                 ├── get-all-matches.usecase.ts
+ │                 ├── get-match-by-id.usecase.ts
+ │                 ├── update-match.usecase.ts
+ │                 └── delete-match.usecase.ts
+ │
+ └── infrastructure/
+       ├── http/
+       │     └── match/
+       │           ├── match.controller.ts
+       │           └── match.module.ts
+       └── persistence/
+             └── prisma/
+                   ├── prisma.service.ts
+                   └── prisma-match.repository.ts (à venir)
+
+🧩 DTO (Data Transfer Objects)
+
+Les DTO définissent la forme des données entrantes et assurent la validation.
+
+CreateMatchDto
+
+UpdateMatchDto
+
+DeleteMatchDto
+
+Ces fichiers vivent dans :
+
+src/application/match/dto/
+
+
+Rôle des DTO :
+
+Contrôler la structure d’entrée (validation)
+
+Ne pas contenir de logique métier
+
+Ne pas dépendre du domaine
+
+🚦 Use Cases
+
+Les Use Cases représentent les actions possibles sur les matchs :
+
+CreateMatchUseCase
+
+GetAllMatchesUseCase
+
+GetMatchByIdUseCase
+
+UpdateMatchUseCase
+
+DeleteMatchUseCase
+
+Un Use Case :
+
+est @Injectable()
+
+dépend du port MatchRepository
+
+orchestre le flux entre DTO ↔ Entité ↔ Repository
+
+ne connaît pas Prisma, ni HTTP
+
+💾 Domain (Entités + Ports)
+
+L’entité métier principale est :
+
+Match {
+  id: string
+  date: Date
+  teamA: string
+  teamB: string
+  status: 'planned' | 'ongoing' | 'finished' | 'deleted'
+}
+
+
+Le domaine définit le port (interface) :
+
+export abstract class MatchRepository {
+  abstract create(match: Match): Promise<Match>;
+  abstract findAll(): Promise<Match[]>;
+  abstract findById(id: string): Promise<Match | null>;
+  abstract update(match: Match): Promise<Match>;
+}
+
+
+L’infrastructure fournit l’implémentation (Prisma).
+
+🛠 HTTP Layer (Controllers)
+
+Un controller :
+
+reçoit les requêtes
+
+valide le DTO
+
+appelle le bon use case
+
+ne contient aucune logique métier
+
+Exemple (simplifié) :
+
+@Post()
+create(@Body() dto: CreateMatchDto) {
+  return this.createMatchUseCase.execute(dto);
+}
+
+🗄 Module NestJS (MatchModule)
+
+Il relie :
+
+controllers
+
+use cases
+
+repository (via token)
+
+adapter infrastructure
+
+C’est le cœur de l’injection de dépendances.
+
+🧪 Tests
+✔ Tests Unitaires (layer application)
+
+Situés dans :
+
+test/application/match/*.spec.ts
+
+
+Ils :
+
+mockent le repository
+
+testent uniquement le use case
+
+ne touchent pas HTTP / Prisma
+
+✔ Tests E2E (HTTP complet)
+
+Situés dans :
+
+test/matches/*.e2e-spec.ts
+
+
+Ils testent toute la stack HTTP, avec un repository mémoire.
+
+Tests fournis :
+
+create-match.e2e-spec.ts
+
+get-all-matches.e2e-spec.ts
+
+get-match-by-id.e2e-spec.ts
+
+update-match.e2e-spec.ts
+
+delete-match.e2e-spec.ts
+
+Les 5 passent 💚.
+
+🚀 Commandes utiles
+Lancer le serveur Nest :
+npm run start:dev
+
+Lancer les tests unitaires :
+npm test
+
+Lancer les tests E2E :
+npm run test:e2e
+
+Générer Prisma :
+npx prisma generate
+
+Lancer Prisma Studio :
+npx prisma studio
+
+📌 CRUD complet (résumé)
+POST   /matches       → CreateMatchDto → createMatchUseCase
+GET    /matches       → getAllMatchesUseCase
+GET    /matches/:id   → getMatchByIdUseCase
+PUT    /matches/:id   → UpdateMatchDto → updateMatchUseCase
+DELETE /matches/:id   → DeleteMatchDto → deleteMatchUseCase

@@ -1,0 +1,183 @@
+✅ 1. Synthèse structurée de ton document et du schéma
+🎯 Persona
+
+Marqueur / Chronométreur (Utilisateur principal)
+
+Objectif : gérer un match de hockey conformément aux règles FFHG.
+
+🎯 2. Les features (macro) – version consolidée
+
+À partir de ton fichier texte 
+
+Higj Level Design - App Table D…
+
+ et du schéma, voici une version plus structurée :
+
+Module Club / Équipe / Joueurs
+
+Gestion des clubs
+
+Gestion des équipes (catégories, division…)
+
+Gestion des joueurs (numéro, poste, licence)
+
+Gestion des dirigeants / officiels
+
+Module Match
+
+Création d’un match (date, compétition, arbitres)
+
+Préparation des feuilles de match
+
+Import/export (ex. export PDF, import de données disponibles)
+
+Module Table de Marque (le cœur)
+
+Démarrer un match
+
+Gérer les périodes
+
+Chronomètre (start/stop, prolongations, tirs au but)
+
+Enregistrer :
+
+buts
+
+assistances
+
+charges pénalités (2’, 5’, 10’, etc.)
+
+temps-morts
+
+incidents / annonces diverses
+
+Calcul du score en temps réel
+
+Journal des événements
+
+Module Annonces
+
+Annonces pré-match (présentation)
+
+Annonces en cours de jeu (buteurs, pénalités…)
+
+Annonces post-match
+
+Module Auth & Rôles
+
+Connexion
+
+Rôles : marqueur, chronométreur, superviseur, admin club
+
+🎯 3. Architecture logique – version propre (à partir de ton dessin)
+Front (UI)
+
+Interface marqueur (parcours principal)
+
+Lancer préparation match
+
+Lancer match
+
+Gérer match
+
+Clôture match
+
+Module score/événements
+
+Module annonces
+
+Pages admin club
+
+Authentification / Connexion
+
+Back (domain + application + infrastructure)
+
+domain/
+
+Match
+
+Club/Équipe/Joueur
+
+TableDeMarque (événements, clock, périodes)
+
+Annonces
+
+Auth
+
+application/
+
+Use cases : CreateMatch, StartMatch, RecordGoal, RecordPenalty…
+
+Validations règles FFHG
+
+infrastructure/
+
+BDD (Prisma)
+
+Serveur HTTP (Express / Nest)
+
+Runtime Table de Marque : gestion du chronomètre côté serveur
+
+Import / Export (PDF)
+
+Notifications/temps réel (WebSockets)
+
+🎯 4. Ce qui est très bien dans ton schéma
+
+✔ Le découpage entre front, back, CI/CD, outillage
+✔ Les modules métier sont nets et tiennent bien compte des contraintes réglementaires FFHG
+✔ Le parcours du marqueur est mis au centre (c’est la bonne approche UX/produit)
+✔ La séparation correcte des blocs : runtime / BDD / contrôles / acquisition / import/export
+
+On part sur d’excellentes bases.
+
+🔧 5. Propositions d'amélioration & clarifications
+
+Pour aller vers une architecture modulaire élégante et maintenable :
+
+(1) Séparer “Match” et “Feuille de match”
+
+Ces deux concepts sont différents :
+
+Match = "événement sportif planifié"
+
+Feuille de match = "document officiel + données de composition"
+
+→ cela évite de surcharger l’entité Match.
+
+(2) Dans TableDeMarque : distinguer les entités métier
+
+Pour faciliter les tests :
+
+Entité	Rôle
+GameEvent	But, pénalité, annonce, temps mort…
+Clock	Gère le temps, transitions de périodes
+Scoreboard	Calcule le score à partir des GameEvents
+Period	1, 2, 3, prolongation, tirs au but
+
+→ Cela facilite un backend pur domaine, quasi sans dépendances.
+
+(3) Prévoir l’évolution vers le temps réel (simple)
+
+Tu veux afficher le score en direct → prévoir un module WebSocket/SSE dès maintenant en infrastructure, même s'il reste vide au début.
+
+(4) Clarifier le module “Annonces”
+
+Il peut sembler transversal, donc le découper :
+
+Annonces métier (déduites d’événements : but, pénalité…)
+
+Annonces personnalisées (speaker)
+
+Diffusion (UI + éventuellement API / WS)
+
+(5) Dans CI/CD, ajouter la notion d’environnements
+
+Ton dessin montre Git + Tests + User Stories → parfait.
+On ajoute :
+
+PR → tests + lint + build
+
+merge main → staging
+
+tag release → prod

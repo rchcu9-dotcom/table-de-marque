@@ -1,0 +1,79 @@
+🏛️ Architecture complète de ton backend (vue à 5 niveaux)
+                          ┌───────────────────────────┐
+                          │        Client HTTP         │
+                          │  (Postman / navigateur)    │
+                          └───────────────┬────────────┘
+                                          │   requêtes
+                                          ▼
+                         ┌────────────────────────────────┐
+                         │           CONTROLLER           │
+                         │   (MatchController)            │
+                         └───────────────┬────────────────┘
+                                         │  appelle un cas d’usage
+                                         ▼
+                   ┌──────────────────────────────────────────┐
+                   │               USE CASE                    │
+                   │        (CreateMatchUseCase)              │
+                   └───────────────┬──────────────────────────┘
+                                   │  demande une action "métier"
+                                   ▼
+             ┌────────────────────────────────────────────────────┐
+             │                DOMAIN (métier)                     │
+             │   - Entité Match                                   │
+             │   - Contrat MatchRepository                        │
+             └────────────────┬────────────────────────────────────┘
+                              │  utilise le repository abstrait
+                              ▼
+      ┌──────────────────────────────────────────────────────────────────┐
+      │                           INFRA                                 │
+      │            Implémentation du repository avec Prisma             │
+      │     (PrismaMatchRepository + PrismaService)                     │
+      └─────────────────────────┬────────────────────────────────────────┘
+                                │  appels DB générés par Prisma
+                                ▼
+                     ┌──────────────────────────────┐
+                     │         PRISMA CLIENT         │
+                     │  (prisma.match.create...)     │
+                     └──────────────┬───────────────┘
+                                    │  SQL généré automatiquement
+                                    ▼
+                       ┌──────────────────────────────────┐
+                       │           BASE DE DONNÉES        │
+                       │     SQLite (dev.db)              │
+                       └──────────────────────────────────┘
+
+🎯 Explication ultra-simple du chemin complet
+
+Le client envoie une requête à ton API :
+→ POST /matches
+
+Le Controller reçoit la requête
+→ /matches → match.controller.ts
+
+Le Controller appelle le Use Case
+→ CreateMatchUseCase.execute()
+
+Le Use Case crée un objet métier Match
+→ Règles métier ici
+
+Le Use Case demande au Repository (abstrait) de le sauvegarder
+
+L’implémentation Prisma du repository exécute l’opération
+→ prisma.match.create(...)
+
+Prisma Client transforme ça en SQL
+
+La database SQLite enregistre le match
+→ écriture dans dev.db
+
+🧩 Et ce schéma correspond exactement à ton architecture réelle :
+
+Routes = Controller
+
+Logique applicative = Use Case
+
+Règles métier = Domain
+
+Accès aux données = Infrastructure + Prisma
+
+Persistance = Base SQLite

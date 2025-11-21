@@ -1,0 +1,49 @@
+Etape 1
+
+
+1.1 Lister les fonctionnalités de la table de marque en mode MACRO
+
+Gérer les clubs, équipes, joueurs, dirigeants
+
+Créer un match (date, lieu, catégories, arbitres, compétition)
+ 
+Créer une feuille de match (match + club/équipe, joueurs, dirigeants)
+
+Saisir en temps réel : buts, pénalités, temps morts/annonces techniques
+
+Générer les annonces d'avant match, du match, et d'après matchs
+
+Afficher le score en direct et les annonces en temps réel
+
+Exporter la feuille de match (PDF ou autre)
+
+Gérer les rôles : marqueur, chronométreur, responsable, admin club…
+
+
+1.2 Découper en “modules” métier (tes futurs modules logiques) :
+
+Match
+
+Club / Equipe / Joueur
+
+TableDeMarque (chronomètre, score, événements)
+
+Auth (utilisateurs, rôles)
+
+
+1.3 Décider d’une architecture en couches (simplifiée) :
+
+domain/ : règles métier pures (Match, Équipe, etc.)
+
+application/ : cas d’usage (créer un match, enregistrer un but)
+
+infrastructure/ : accès BDD, HTTP, etc.
+
+ui/ : React, composants, pages
+
+
+1.4 les principaux cas d’usage,
+Les cas d'usage sont décrits dans ce document
+https://www.hockeyfrance.com/wp-content/uploads/2023/09/Fascicule-Directives-Table-de-Marque_30.08.2023.pdf
+
+1.5 un schéma simple de l’architecture

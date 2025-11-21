@@ -1,0 +1,81 @@
+🏗️ Architecture du Backend (Hexagonale | DDD | NestJS)
+
+Ce backend suit une architecture hexagonale (ports & adapters) qui sépare :
+
+Le métier (Domain)
+
+Les cas d’usage (Application)
+
+Les interfaces techniques (Infrastructure)
+
+La base de données (DB via Prisma)
+
+🔵 Vue “Flux logique” (quand une requête arrive)
+
+Client HTTP
+     │
+     ▼
+MatchController (HTTP Adapter)
+     │
+     ▼
+Use Case (Application)
+     │
+     ▼
+MatchRepository (Port)
+     │
+     ▼
+PrismaMatchRepository (Infrastructure Adapter)
+     │
+     ▼
+Base de données PostgreSQL (via Prisma)
+
+
+🟣 Vue “Responsabilités / Dossiers”
+backend/
+└── src/
+    ├── domain/
+    │   ├── entities/          ← Modèles métier
+    │   └── repositories/       ← Ports (interfaces métier)
+    │
+    ├── application/
+    │   ├── dto/                ← Objets d’échange avec les controllers
+    │   └── use-cases/          ← Logique applicative
+    │
+    └── infrastructure/
+        ├── http/               ← Contrôleurs NestJS (adapters HTTP)
+        │   └── match/
+        ├── persistence/        ← Prisma (adapters persistence)
+        │   └── prisma/
+        └── ...
+
+
+🟩 Vue hybride (Flux + Couches)
+                        Flux logique ↓
+
+┌──────────────────────────────────────┐
+│  infrastructure/http                 │
+│  MatchController                     │
+└──────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│  application/use-cases               │
+│  CreateMatchUseCase, etc.            │
+└──────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│  domain/repositories                 │
+│  MatchRepository (port)              │
+└──────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│  infrastructure/persistence/prisma   │
+│  PrismaMatchRepository (adapter)     │
+└──────────────────────────────────────┘
+                   │
+                   ▼
+┌──────────────────────────────────────┐
+│                Database              │
+└──────────────────────────────────────┘
