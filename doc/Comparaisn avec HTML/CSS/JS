@@ -1,0 +1,61 @@
+# Comparatif : Node.js / NestJS / Next.js / Jest vs HTML / CSS / JS
+
+## 1. Introduction
+- **HTML/CSS/JS** : les briques fondamentales du web, utilisées par tous les navigateurs.
+- **Node/Nest/Next/Jest** : une stack moderne couvrant backend, frontend et tests, construite au-dessus de JavaScript/TypeScript.
+
+---
+
+## 2. Historique
+- **HTML (1991)** : langage de structure des pages web.
+- **CSS (1996)** : langage de style et mise en forme.
+- **JavaScript (1995)** : langage de script côté client, devenu incontournable.
+- **Node.js (2009)** : exécution JS côté serveur, modèle asynchrone.
+- **NestJS (2017)** : framework backend structuré, inspiré d’Angular.
+- **Next.js (2016)** : framework React avec SSR/SSG.
+- **Jest (2014)** : framework de tests moderne.
+
+---
+
+## 3. Comparaison directe
+
+| Critère              | HTML/CSS/JS (socle) | Node/Nest/Next/Jest (stack moderne) |
+|-----------------------|---------------------|-------------------------------------|
+| **Nature**            | Langages de base du web | Frameworks et runtime construits au-dessus |
+| **Portée**            | Frontend uniquement | Backend (Nest), Frontend (Next), Tests (Jest) |
+| **Structure**         | Non imposée, libre | Architecture modulaire et outillée |
+| **Scalabilité**       | Limitée, nécessite frameworks externes | Native, pensée pour microservices et cloud |
+| **Temps réel**        | Possible mais complexe | Natif avec Node.js (WebSockets, events) |
+| **Tests**             | Non intégrés | Jest fournit un environnement complet |
+| **SEO**               | HTML natif | Next.js optimise SSR/SSG pour SEO |
+| **Apprentissage**     | Simple, accessible | Plus complexe, nécessite TypeScript et concepts avancés |
+
+---
+
+## 4. Schéma ASCII
+
+TML/CSS/JS (socle) | v Sites statiques, pages simples | +--> Ajout de frameworks JS (React, Vue, Angular) | v Next.js (frontend React + SSR/SSG) | v NestJS (backend structuré sur Node.js) | v Node.js (runtime serveur) | v Jest (tests automatisés)
+
+
+---
+
+## 5. Schéma Mermaid (visuel)
+
+```mermaid
+flowchart TD
+    A[HTML/CSS/JS] --> B[Frontend simple]
+    B --> C[Frameworks JS (React/Vue/Angular)]
+    C --> D[Next.js : frontend React + SSR/SSG]
+    D --> E[NestJS : backend structuré]
+    E --> F[Node.js : runtime serveur]
+    F --> G[Jest : tests]
+
+
+---
+
+6. Conclusion
+HTML/CSS/JS : indispensables, simples, universels, mais limités pour des applications complexes.
+
+Node/Nest/Next/Jest : stack moderne, cohérente et scalable, adaptée aux applications SaaS, APIs et plateformes cloud.
+
+👉 Les frameworks modernes ne remplacent pas HTML/CSS/JS, mais les enrichissent et les organisent pour des projets ambitieux.

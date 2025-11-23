@@ -6,8 +6,14 @@ on:
   pull_request:
     branches: ['main']
 
+env:
+  PROJECT_ID: table-de-marque        # ex: table-de-marque-123456
+  REGION: europe-west9               # ex: europe-west1
+  SERVICE_NAME: match-service             # nom Cloud Run que tu veux
+  ARTIFACT_REPO: table-de-marque-backend  # ex: hockey-backend
+
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     defaults:
@@ -26,9 +32,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build TypeScript
         run: npm run build
@@ -38,3 +45,32 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e -- --ci --runInBand
+
+      # --- Auth GCP pour push image + déploiement Cloud Run ---
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build and push Docker image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.ARTIFACT_REPO }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          echo "IMAGE=$IMAGE" >> $GITHUB_ENV
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}
+          allow_unauthenticated: true

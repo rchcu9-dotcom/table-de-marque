@@ -1,0 +1,80 @@
+# Aperçu de la stack moderne : Node.js, NestJS, Next.js, Jest
+
+## 1. Introduction
+Cette suite logicielle couvre :
+- **Node.js** : runtime JavaScript côté serveur
+- **NestJS** : framework backend structuré
+- **Next.js** : framework frontend basé sur React
+- **Jest** : framework de tests
+
+👉 Ensemble, elles forment une stack moderne, cohérente et scalable, qui remplace avantageusement les architectures classiques comme LAMP (Linux, Apache, MySQL, PHP).
+
+---
+
+## 2. Historique et rôle de chaque technologie
+
+### Node.js (2009)
+- Créé par Ryan Dahl.
+- Permet d’exécuter du JavaScript côté serveur grâce au moteur V8 de Chrome.
+- Introduit un modèle **asynchrone et non bloquant**, idéal pour les applications temps réel (chat, API, streaming).
+
+### NestJS (2017)
+- Framework backend construit sur Node.js et Express/Fastify.
+- Inspiré d’Angular : structure modulaire, décorateurs, injection de dépendances.
+- Apporte une architecture claire et robuste pour des projets backend complexes et scalables.
+
+### Next.js (2016)
+- Framework frontend basé sur React.
+- Ajoute le **rendu côté serveur (SSR)**, la **génération statique (SSG)** et les **API routes**.
+- Permet de créer des applications web rapides, SEO-friendly et full-stack.
+
+### Jest (2014, Facebook)
+- Framework de tests JavaScript/TypeScript.
+- Simple, rapide, avec mocks intégrés et snapshots.
+- Standard de facto pour tester React, Node et Nest.
+
+---
+
+## 3. Comparaison avec LAMP
+
+| Aspect        | LAMP (Linux, Apache, MySQL, PHP) | Stack moderne (Node/Nest/Next/Jest) |
+|---------------|----------------------------------|-------------------------------------|
+| Langage       | PHP + SQL                        | JavaScript/TypeScript partout       |
+| Architecture  | Monolithique                     | API REST/GraphQL, microservices     |
+| Temps réel    | Limité                           | Natif (WebSockets, events)          |
+| DevOps        | Basique                          | CI/CD, containers, serverless       |
+| Front/Back    | Séparés                          | Unifiés via JS/TS                   |
+
+---
+
+## 4. Articulation des technologies
+
+
+
++-------------------+ | Next.js (UI) | +-------------------+ | v +-------------------+ | NestJS (API) | +-------------------+ | v +-------------------+ | Node.js runtime | +-------------------+ | v +-------------------+ | Jest (tests) | +-------------------+
+
+-
+- **Node.js** : runtime de base
+- **NestJS** : structure backend (API, microservices)
+- **Next.js** : frontend React + SSR, peut aussi héberger des API routes
+- **Jest** : tests unitaires et d’intégration pour les deux
+
+---
+
+## 5. Positionnement face aux concurrents
+
+| Segment   | Alternatives | Comparaison |
+|-----------|--------------|-------------|
+| Backend   | Spring Boot (Java), Django (Python), Ruby on Rails | NestJS apporte la rigueur d’Angular avec la rapidité de Node |
+| Frontend  | Angular, Vue.js, Svelte | Next.js est centré sur React, avec SSR/SSG que Vue/Svelte n’ont pas nativement |
+| Full-stack| Meteor, Laravel+Vue, Django+React | La stack Node/Nest/Next est plus moderne, cloud-native et orientée microservices |
+| Tests     | Mocha, Jasmine, Cypress | Jest est plus intégré à l’écosystème React/Nest et plus simple à configurer |
+
+---
+
+## 6. Conclusion
+- Stack moderne, cohérente et scalable.
+- Un langage unique (JS/TS) → moins de friction.
+- Cloud-native, adaptée aux microservices et au temps réel.
+- Alternative JavaScript/TypeScript aux stacks Python (Django/Flask), Java (Spring), ou PHP (Laravel).
+
