@@ -73,5 +73,8 @@ jobs:
         with:
           service: ${{ env.SERVICE_NAME }}
           region: ${{ env.REGION }}
+          project_id: ${{ env.PROJECT_ID }}
           image: ${{ env.IMAGE }}
-          allow_unauthenticated: true
+          flags: --allow-unauthenticated
+
+
